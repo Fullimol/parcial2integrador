@@ -12,7 +12,7 @@ public class Ordenamiento {
     // Filtrar eventos según un FiltroEvento
     public List<Evento> filtrar(List<Evento> eventos, FiltroEvento filtro) {
         return eventos.stream()
-                .filter(filtro::filtrar) // Usa el método de la interfaz funcional
+                .filter(evento -> filtro.filtrar(evento)) // Usa el método de la interfaz funcional
                 .collect(Collectors.toList());
     }
 
