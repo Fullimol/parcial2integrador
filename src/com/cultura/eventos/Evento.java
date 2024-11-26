@@ -1,9 +1,11 @@
 package com.cultura.eventos;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public abstract class Evento {
-
+public abstract class Evento implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
     //atributos
     private String codigo;
     private String titulo;
@@ -24,4 +26,25 @@ public abstract class Evento {
     public abstract boolean estaLleno();
 
     public abstract void mostrarDetalles();
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public String getOrganizador() {
+        return organizador;
+    }
+
+    public int getCapacidadMaxima() {
+        return capacidadMaxima;
+    }
+
 }

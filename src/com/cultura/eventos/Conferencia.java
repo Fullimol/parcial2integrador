@@ -7,14 +7,14 @@ public class Conferencia extends Evento {
 
     //atributos
     private String tema;
-    private List<String> penalistas;
+    private List<String> panelistas;
 
     //constructor
     public Conferencia(String codigo, String titulo, LocalDate fecha, String organizador,
-            int capacidadMaxima, String tema, List<String> penalistas) {
+            int capacidadMaxima, String tema, List<String> panelistas) {
         super(codigo, titulo, fecha, organizador, capacidadMaxima);
         this.tema = tema;
-        this.penalistas = penalistas;
+        this.panelistas = panelistas;
     }
 
     //metodos:
@@ -30,6 +30,6 @@ public class Conferencia extends Evento {
     
     
     public int cantidadPanelistas(){
-        return penalistas.size();
+        return panelistas.size();
     }
 }
