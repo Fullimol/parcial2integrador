@@ -26,7 +26,7 @@ public class EventoRepositorio {
     private final Gson gson = GsonConfig.createGson();
 
     private void guardarEnJson() {
-        try (Writer escritor = new FileWriter("evento.json")) {
+        try (Writer escritor = new FileWriter("eventos.json")) {
             gson.toJson(eventos, escritor);
             System.out.println("Evento guardado en JSON");
         } catch (IOException e) {
@@ -61,8 +61,6 @@ public class EventoRepositorio {
         }
     }
      */
-    
-    
     public void guardarListaBinario(List<Evento> eventos) {
         try (ObjectOutputStream salida = new ObjectOutputStream(new FileOutputStream("eventos.dat"))) {
             salida.writeObject(eventos);
@@ -117,9 +115,7 @@ public class EventoRepositorio {
      * @param eventoActualizado Evento con datos actualizados
      */
     public void actualizar(Evento eventoActualizado) {
-        eventos.replaceAll(e
-                -> e.getCodigo().equals(eventoActualizado.getCodigo()) ? eventoActualizado : e
-        );
+        eventos.replaceAll(e -> e.getCodigo().equals(eventoActualizado.getCodigo()) ? eventoActualizado : e);
         guardarEnJson();
     }
 
