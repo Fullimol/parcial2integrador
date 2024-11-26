@@ -3,10 +3,12 @@
  */
 package com.cultura.mvc;
 
-
+import com.cultura.eventos.Concierto;
+import com.cultura.eventos.Conferencia;
 import com.cultura.eventos.Evento;
+import com.cultura.gestores.GsonConfig;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.*;
@@ -15,20 +17,72 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
 public class EventoRepositorio {
+
     // Lista de eventos
     private List<Evento> eventos = new ArrayList<>();
+
+    // Objeto para serialización JSON utilizando la configuración personalizada
+    private final Gson gson = GsonConfig.createGson();
+
+    private void guardarEnJson() {
+        try (Writer escritor = new FileWriter("evento.json")) {
+            gson.toJson(eventos, escritor);
+            System.out.println("Evento guardado en JSON");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*
+    public void cargarDesdeJson() {
+        try (Reader lector = new FileReader("eventos.json")) {
+            Type tipoListaEventos = new TypeToken<ArrayList<JsonObject>>() {
+            }.getType();
+            List<JsonObject> jsonList = gson.fromJson(lector, tipoListaEventos);
+            eventos = new ArrayList<>();
+            for (JsonObject jsonObj : jsonList) {
+                String tipo = jsonObj.get("tipo").getAsString();
+                if ("Concierto".equals(tipo)) {
+                    eventos.add(gson.fromJson(jsonObj, Concierto.class));
+                } else if ("Conferencia".equals(tipo)) {
+                    eventos.add(gson.fromJson(jsonObj, Conferencia.class));
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Archivo eventos.json no encontrado, iniciando con una lista vacía.");
+            eventos = new ArrayList<>();
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo eventos.json: " + e.getMessage());
+            eventos = new ArrayList<>();
+        } catch (Exception e) {
+            System.out.println("Error al procesar el archivo JSON: " + e.getMessage());
+            eventos = new ArrayList<>();
+        }
+    }
+     */
     
-    // Archivo para guardar/cargar datos
-    private static final String ARCHIVO_JSON = "eventos.json";
     
-    // Objeto para serialización JSON
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    public void guardarListaBinario(List<Evento> eventos) {
+        try (ObjectOutputStream salida = new ObjectOutputStream(new FileOutputStream("eventos.dat"))) {
+            salida.writeObject(eventos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<Evento> cargarListaBinaria() {
+        try (ObjectInputStream entrada = new ObjectInputStream(new FileInputStream("eventos.dat"))) {
+            return (List<Evento>) entrada.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     /**
      * Guardar un nuevo evento.
-     * 
+     *
      * @param evento Evento a guardar
      */
     public void guardar(Evento evento) {
@@ -38,7 +92,7 @@ public class EventoRepositorio {
 
     /**
      * Obtener todos los eventos.
-     * 
+     *
      * @return Lista de eventos
      */
     public List<Evento> buscarTodos() {
@@ -47,7 +101,7 @@ public class EventoRepositorio {
 
     /**
      * Buscar un evento por su código.
-     * 
+     *
      * @param codigo Código del evento
      * @return Optional con el evento encontrado
      */
@@ -59,47 +113,31 @@ public class EventoRepositorio {
 
     /**
      * Actualizar un evento existente.
-     * 
+     *
      * @param eventoActualizado Evento con datos actualizados
      */
     public void actualizar(Evento eventoActualizado) {
-        eventos.replaceAll(e -> 
-            e.getCodigo().equals(eventoActualizado.getCodigo()) ? eventoActualizado : e
+        eventos.replaceAll(e
+                -> e.getCodigo().equals(eventoActualizado.getCodigo()) ? eventoActualizado : e
         );
         guardarEnJson();
     }
 
     /**
      * Eliminar un evento por su código.
-     * 
+     *
      * @param codigo Código del evento a eliminar
      */
-    public void eliminar(String codigo) {
-        eventos.removeIf(e -> e.getCodigo().equals(codigo));
-        guardarEnJson();
-    }
-
-    /**
-     * Guardar eventos en archivo JSON.
-     */
-    private void guardarEnJson() {
-        try (Writer escritor = new FileWriter(ARCHIVO_JSON)) {
-            gson.toJson(eventos, escritor);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Cargar eventos desde archivo JSON.
-     */
-    public void cargarDesdeJson() {
-        try (Reader lector = new FileReader(ARCHIVO_JSON)) {
-            Type tipoListaEventos = new TypeToken<ArrayList<Evento>>(){}.getType();
-            eventos = gson.fromJson(lector, tipoListaEventos);
-            if (eventos == null) eventos = new ArrayList<>();
-        } catch (IOException e) {
-            eventos = new ArrayList<>();
+    public boolean eliminar(String codigo) {
+        try {
+            boolean eliminado = eventos.removeIf(e -> e.getCodigo().equals(codigo));
+            if (eliminado) {
+                guardarEnJson();
+            }
+            return eliminado;
+        } catch (Exception e) {
+            System.out.println("Error al eliminar el evento: " + e.getMessage());
+            return false;
         }
     }
 }

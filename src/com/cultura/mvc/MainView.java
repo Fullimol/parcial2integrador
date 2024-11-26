@@ -3,10 +3,12 @@ package com.cultura.mvc;
 import com.cultura.eventos.Concierto;
 import com.cultura.eventos.Conferencia;
 import com.cultura.eventos.Evento;
+
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import javafx.application.Application;
+import static javafx.application.Application.launch;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -17,8 +19,7 @@ import javafx.stage.Stage;
 
 public class MainView extends Application {
 
-    // Controlador de eventos
-    private EventoControlador controlador;
+    private EventoRepositorio repositorio = new EventoRepositorio();
 
     // Elementos de la interfaz gráfica
     private ListView<Evento> vistaListaEventos = new ListView<>();
@@ -26,17 +27,25 @@ public class MainView extends Application {
     private TextField campoFecha = new TextField(); // Formato esperado: YYYY-MM-DD
     private TextField campoCapacidad = new TextField();
 
+    private void refrescarListaEventos() {
+        vistaListaEventos.getItems().clear(); // Limpiar la lista actual
+        vistaListaEventos.getItems().addAll(repositorio.buscarTodos()); // Agregar todos los eventos desde el repositorio
+    }
+
     @Override
     public void start(Stage escenarioPrincipal) {
-
-        // Inicializar controlador
-        controlador = new EventoControlador(); // Asegúrate de tener el controlador adecuado
-
+        
+        // Crear instancias de eventos de ejemplo 
+        Evento evento1 = new Concierto("C001", "Concierto de Rock", LocalDate.of(2024, 11, 30), "Empresa X", 100, "Artista Y", "Rock");
+        Evento evento2 = new Conferencia("C002", "Conferencia de Tecnología", LocalDate.of(2024, 12, 15), "Tech Corp", 150, "Innovaciones en IA", List.of("Panelista A", "Panelista B"));
+        // Agregar eventos de ejemplo al repositorio y guardar en JSON 
+        repositorio.guardar(evento1);
+        repositorio.guardar(evento2);
+       
+        refrescarListaEventos();
         // Contenedor principal
         VBox layoutPrincipal = new VBox(10);
         layoutPrincipal.setPadding(new Insets(10));
-
-
 
         // Botones
         Button botonAgregarConcierto = new Button("Agregar Concierto");
@@ -44,32 +53,45 @@ public class MainView extends Application {
 
         Button botonAgregarConferencia = new Button("Agregar Conferencia");
         botonAgregarConferencia.setOnAction(e -> showAddConferenciaDialog(escenarioPrincipal, new TextArea()));
-        
+
         Button botonActualizar = new Button("Actualizar Evento");
         botonActualizar.setOnAction(e -> System.out.println("actualizar"));
 
         Button botonEliminar = new Button("Eliminar Evento");
-        botonEliminar.setOnAction(e -> System.out.println("eliminar"));
+        botonEliminar.setOnAction(e -> showEliminarEventoDialog(escenarioPrincipal));
 
-        // Configurar vista de lista de eventos
-        /*
+        // Configuración de la vista de lista de eventos
         vistaListaEventos.setCellFactory(param -> new ListCell<>() {
             @Override
             protected void updateItem(Evento evento, boolean vacio) {
                 super.updateItem(evento, vacio);
-                setText(vacio ? "" : evento.getNombre() + " - " + evento.getFecha() + " (" + evento.getCapacidadRestante() + ")");
+                if (vacio || evento == null) {
+                    setText("");
+                } else {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Título: ").append(evento.getTitulo()).append("\n");
+                    sb.append("Código: ").append(evento.getCodigo()).append("\n");
+                    sb.append("Fecha: ").append(evento.getFecha()).append("\n");
+                    sb.append("Organizador: ").append(evento.getOrganizador()).append("\n");
+                    sb.append("Capacidad Máxima: ").append(evento.getCapacidadMaxima()).append("\n");
+
+                    if (evento instanceof Concierto) {
+                        Concierto concierto = (Concierto) evento;
+                        sb.append("Artista Principal: ").append(concierto.getArtistaPrincipal()).append("\n");
+                        sb.append("Género Musical: ").append(concierto.getGeneroMusical()).append("\n");
+                    } else if (evento instanceof Conferencia) {
+                        Conferencia conferencia = (Conferencia) evento;
+                        sb.append("Tema: ").append(conferencia.getTema()).append("\n");
+                        sb.append("Panelistas: ").append(String.join(", ", conferencia.getPanelistas())).append("\n");
+                    }
+
+                    setText(sb.toString());
+                }
             }
         });
-         */
-        // Listener para selección en la lista
-        /*
-        vistaListaEventos.getSelectionModel().selectedItemProperty().addListener((obs, seleccionAnterior, nuevaSeleccion) -> {
-            controlador.handleSeleccionEvento(nuevaSeleccion);
-        });
-         */
+
         // Diseño del formulario
         GridPane gridEntrada = new GridPane();
-
 
         // Contenedor de botones
         HBox contenedorBotones = new HBox(10, botonAgregarConcierto, botonAgregarConferencia, botonActualizar, botonEliminar);
@@ -87,12 +109,9 @@ public class MainView extends Application {
         escenarioPrincipal.setTitle("Sistema de Gestión de Eventos");
         escenarioPrincipal.setScene(escena);
         escenarioPrincipal.show();
-
-        // Inicializar lista
-        // controlador.cargarEventos();
     }
 
-       private void showAddConferenciaDialog(Stage owner, TextArea conferenciaDisplay) {
+    private void showAddConferenciaDialog(Stage owner, TextArea conferenciaDisplay) {
         Dialog<Evento> dialog = new Dialog<>();
         dialog.setTitle("Agregar Concierto");
         dialog.initOwner(owner);
@@ -104,8 +123,8 @@ public class MainView extends Application {
         TextField tituloField = new TextField();
         tituloField.setPromptText("Título del concierto");
 
-        TextField fechaField = new TextField();
-        fechaField.setPromptText("Fecha (YYYY-MM-DD)");
+        DatePicker fechaPicker = new DatePicker();  // Usar DatePicker para la fecha
+        fechaPicker.setPromptText("Fecha");
 
         TextField organizadorField = new TextField();
         organizadorField.setPromptText("Nombre del organizador");
@@ -130,7 +149,7 @@ public class MainView extends Application {
         grid.add(new Label("Título:"), 0, 1);
         grid.add(tituloField, 1, 1);
         grid.add(new Label("Fecha:"), 0, 2);
-        grid.add(fechaField, 1, 2);
+        grid.add(fechaPicker, 1, 2);  // Añadir el DatePicker
         grid.add(new Label("Organizador:"), 0, 3);
         grid.add(organizadorField, 1, 3);
         grid.add(new Label("Capacidad máxima:"), 0, 4);
@@ -152,7 +171,7 @@ public class MainView extends Application {
                 try {
                     String codigo = codigoField.getText();
                     String titulo = tituloField.getText();
-                    LocalDate fecha = LocalDate.parse(fechaField.getText());
+                    LocalDate fecha = fechaPicker.getValue();
                     String organizador = organizadorField.getText();
                     int capacidad = Integer.parseInt(capacidadField.getText());
                     String tema = temaField.getText();
@@ -168,21 +187,17 @@ public class MainView extends Application {
         });
 
         // Manejar el resultado del diálogo
-        
         dialog.showAndWait().ifPresent(evento -> {
             // Aquí puedes agregar lógica para agregar el evento al repositorio
             // y actualizar la interfaz
-            
+            repositorio.guardar(evento);
+            refrescarListaEventos();
             // controlador.agregarEvento(evento);  // Asegúrate de tener este método en tu controlador
             conferenciaDisplay.setText("Concierto agregado:\n" + evento);
         });
-         
+
     }
-    
-    
-    
-    
-    
+
     private void showAddConciertoDialog(Stage owner, TextArea conciertoDisplay) {
         Dialog<Evento> dialog = new Dialog<>();
         dialog.setTitle("Agregar Concierto");
@@ -195,8 +210,8 @@ public class MainView extends Application {
         TextField tituloField = new TextField();
         tituloField.setPromptText("Título del concierto");
 
-        TextField fechaField = new TextField();
-        fechaField.setPromptText("Fecha (YYYY-MM-DD)");
+        DatePicker fechaPicker = new DatePicker();  // Usar DatePicker para la fecha
+        fechaPicker.setPromptText("Fecha");
 
         TextField organizadorField = new TextField();
         organizadorField.setPromptText("Nombre del organizador");
@@ -207,8 +222,8 @@ public class MainView extends Application {
         TextField artistaPrincipalField = new TextField();
         artistaPrincipalField.setPromptText("Artista principal");
 
-        TextField grupoMusicalField = new TextField();
-        grupoMusicalField.setPromptText("Grupo musical");
+        TextField generoMusicalField = new TextField();
+        generoMusicalField.setPromptText("Grupo musical");
 
         // Configuración del GridPane
         GridPane grid = new GridPane();
@@ -221,15 +236,15 @@ public class MainView extends Application {
         grid.add(new Label("Título:"), 0, 1);
         grid.add(tituloField, 1, 1);
         grid.add(new Label("Fecha:"), 0, 2);
-        grid.add(fechaField, 1, 2);
+        grid.add(fechaPicker, 1, 2);  // Añadir el DatePicker
         grid.add(new Label("Organizador:"), 0, 3);
         grid.add(organizadorField, 1, 3);
         grid.add(new Label("Capacidad máxima:"), 0, 4);
         grid.add(capacidadField, 1, 4);
         grid.add(new Label("Artista principal:"), 0, 5);
         grid.add(artistaPrincipalField, 1, 5);
-        grid.add(new Label("Grupo musical:"), 0, 6);
-        grid.add(grupoMusicalField, 1, 6);
+        grid.add(new Label("Genero musical:"), 0, 6);
+        grid.add(generoMusicalField, 1, 6);
 
         dialog.getDialogPane().setContent(grid);
 
@@ -243,14 +258,14 @@ public class MainView extends Application {
                 try {
                     String codigo = codigoField.getText();
                     String titulo = tituloField.getText();
-                    LocalDate fecha = LocalDate.parse(fechaField.getText());
+                    LocalDate fecha = fechaPicker.getValue();  // Obtener la fecha desde el DatePicker
                     String organizador = organizadorField.getText();
                     int capacidad = Integer.parseInt(capacidadField.getText());
                     String artistaPrincipal = artistaPrincipalField.getText();
-                    String grupoMusical = grupoMusicalField.getText();
+                    String generoMusical = generoMusicalField.getText();
 
                     // Crear y devolver el nuevo evento
-                    return new Concierto(codigo, titulo, fecha, organizador, capacidad, artistaPrincipal, grupoMusical);
+                    return new Concierto(codigo, titulo, fecha, organizador, capacidad, artistaPrincipal, generoMusical);
                 } catch (Exception e) {
                     System.out.println("ERROR: " + e);
                 }
@@ -259,15 +274,41 @@ public class MainView extends Application {
         });
 
         // Manejar el resultado del diálogo
-        
         dialog.showAndWait().ifPresent(evento -> {
             // Aquí puedes agregar lógica para agregar el evento al repositorio
             // y actualizar la interfaz
-            
+            repositorio.guardar(evento);
+            refrescarListaEventos();
             // controlador.agregarEvento(evento);  // Asegúrate de tener este método en tu controlador
-            conciertoDisplay.setText("Concierto agregado:\n" + evento);
+            //conciertoDisplay.setText("Concierto agregado:\n" + evento);
         });
-         
+    }
+
+    private void showEliminarEventoDialog(Stage owner) {
+        // Crear un cuadro de diálogo
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Eliminar Evento");
+        dialog.setHeaderText("Eliminar Evento");
+        dialog.setContentText("Por favor, ingresa el código del evento:");
+
+        // Mostrar el diálogo y capturar el resultado
+        dialog.showAndWait().ifPresent(codigo -> {
+            boolean eliminado = repositorio.eliminar(codigo);
+            if (eliminado) {
+                refrescarListaEventos();
+                mostrarMensaje("Evento eliminado", "El evento con el código " + codigo + " ha sido eliminado.");
+            } else {
+                mostrarMensaje("Evento no encontrado", "No se encontró ningún evento con el código " + codigo + ".");
+            }
+        });
+    }
+
+    private void mostrarMensaje(String titulo, String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 
     public static void main(String[] args) {

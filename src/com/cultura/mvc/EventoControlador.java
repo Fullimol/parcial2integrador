@@ -1,3 +1,4 @@
+/*
 package com.cultura.mvc;
 
 import com.cultura.excepciones.EventoNoEncontradoException;
@@ -40,3 +41,4 @@ public class EventoControlador {
         System.out.println("Evento eliminado: " + codigo);
     }
 }
+*/

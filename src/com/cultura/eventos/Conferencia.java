@@ -32,4 +32,14 @@ public class Conferencia extends Evento {
     public int cantidadPanelistas(){
         return panelistas.size();
     }
+
+    public String getTema() {
+        return tema;
+    }
+
+    public List<String> getPanelistas() {
+        return panelistas;
+    }
+    
+    
 }

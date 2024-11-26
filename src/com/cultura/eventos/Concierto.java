@@ -30,4 +30,14 @@ public class Concierto extends Evento {
     public boolean esMusicaClasica() {
         return "Clásica".equalsIgnoreCase(generoMusical);
     }
+
+    public String getArtistaPrincipal() {
+        return artistaPrincipal;
+    }
+
+    public String getGeneroMusical() {
+        return generoMusical;
+    }
+    
+    
 }
