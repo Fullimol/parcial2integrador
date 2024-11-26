@@ -1,1 +1,25 @@
-[{"artistaPrincipal":"Artista Y","generoMusical":"Rock","codigo":"C001","titulo":"Concierto de Rock","fecha":"2024-11-30","organizador":"Empresa X","capacidadMaxima":100}]
+[
+    {
+        "tipo": "CONCIERTO",
+        "artistaPrincipal": "Coldplay",
+        "generoMusical": "Rock Alternativo",
+        "codigo": "001",
+        "titulo": "A Head Full of Dreams Tour",
+        "fecha": "2024-11-09",
+        "organizador": "Live Nation",
+        "capacidadMaxima": 50000
+    },
+    {
+        "tipo": "CONFERENCIA",
+        "tema": "Innovaciones en Inteligencia Artificial",
+        "panelistas": [
+            "Dr. Alice Johnson",
+            "Prof. John Doe"
+        ],
+        "codigo": "002",
+        "titulo": "AI Revolution 2024",
+        "fecha": "2024-11-08",
+        "organizador": "Tech Innovations",
+        "capacidadMaxima": 1000
+    }
+]

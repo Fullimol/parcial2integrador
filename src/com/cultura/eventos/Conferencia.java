@@ -6,13 +6,15 @@ import java.util.List;
 public class Conferencia extends Evento {
 
     //atributos
+    private TipoEvento tipo;
     private String tema;
     private List<String> panelistas;
 
     //constructor
-    public Conferencia(String codigo, String titulo, LocalDate fecha, String organizador,
+    public Conferencia(TipoEvento tipo, String codigo, String titulo, LocalDate fecha, String organizador,
             int capacidadMaxima, String tema, List<String> panelistas) {
         super(codigo, titulo, fecha, organizador, capacidadMaxima);
+        this.tipo = TipoEvento.CONFERENCIA;
         this.tema = tema;
         this.panelistas = panelistas;
     }
@@ -39,6 +41,10 @@ public class Conferencia extends Evento {
 
     public List<String> getPanelistas() {
         return panelistas;
+    }
+
+    public TipoEvento getTipo() {
+        return tipo;
     }
     
     

@@ -5,13 +5,15 @@ import java.time.LocalDate;
 public class Concierto extends Evento {
 
     // atributos
+    private TipoEvento tipo;
     private String artistaPrincipal;
     private String generoMusical;
 
     // constructor:
-    public Concierto(String codigo, String titulo, LocalDate fecha, String organizador,
+    public Concierto(TipoEvento tipo, String codigo, String titulo, LocalDate fecha, String organizador,
             int capacidadMaxima, String artistaPrincipal, String generoMusical) {
         super(codigo, titulo, fecha, organizador, capacidadMaxima);
+        this.tipo = TipoEvento.CONCIERTO;
         this.artistaPrincipal = artistaPrincipal;
         this.generoMusical = generoMusical;
     }
@@ -37,6 +39,10 @@ public class Concierto extends Evento {
 
     public String getGeneroMusical() {
         return generoMusical;
+    }
+
+    public TipoEvento getTipo() {
+        return tipo;
     }
     
     

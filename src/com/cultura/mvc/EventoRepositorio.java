@@ -21,12 +21,13 @@ public class EventoRepositorio {
 
     // Lista de eventos
     private List<Evento> eventos = new ArrayList<>();
+    private String nombreArchivoJson = "eventos.json";
 
     // Objeto para serialización JSON utilizando la configuración personalizada
     private final Gson gson = GsonConfig.createGson();
 
     private void guardarEnJson() {
-        try (Writer escritor = new FileWriter("eventos.json")) {
+        try (Writer escritor = new FileWriter(nombreArchivoJson)) {
             gson.toJson(eventos, escritor);
             System.out.println("Evento guardado en JSON");
         } catch (IOException e) {
@@ -35,17 +36,33 @@ public class EventoRepositorio {
     }
 
     public void cargarDesdeJson() {
-        try (Reader lector = new FileReader("eventos.json")) {
-            Type tipoListaEstudiantes = new TypeToken<ArrayList<Evento>>() {
+        try (Reader lector = new FileReader(nombreArchivoJson)) {
+            Type tipoListaEventos = new TypeToken<ArrayList<JsonObject>>() {
             }.getType();
-            eventos = gson.fromJson(lector, tipoListaEstudiantes);
-            if (eventos == null) {
-                eventos = new ArrayList<>();
+            List<JsonObject> jsonList = gson.fromJson(lector, tipoListaEventos);
+            eventos = new ArrayList<>();
+            for (JsonObject jsonObj : jsonList) {
+                String tipo = jsonObj.get("tipo").getAsString();
+                if ("concierto".equalsIgnoreCase(tipo)) {
+                    eventos.add(gson.fromJson(jsonObj, Concierto.class));
+                } else if ("conferencia".equalsIgnoreCase(tipo)) {
+                    eventos.add(gson.fromJson(jsonObj, Conferencia.class));
+                }
             }
+            System.out.println("Eventos cargados: " + eventos.size());
+        } catch (FileNotFoundException e) {
+            System.out.println("Archivo eventos.json no encontrado, iniciando con una lista vacía.");
+            eventos = new ArrayList<>();
         } catch (IOException e) {
+            System.out.println("Error al leer el archivo eventos.json: " + e.getMessage());
+            eventos = new ArrayList<>();
+        } catch (Exception e) {
+            System.out.println("Error al procesar el archivo JSON: " + e.getMessage());
             eventos = new ArrayList<>();
         }
     }
+
+    
 
     public void guardarListaBinario(List<Evento> eventos) {
         try (ObjectOutputStream salida = new ObjectOutputStream(new FileOutputStream("eventos.dat"))) {

@@ -3,6 +3,7 @@ package com.cultura.mvc;
 import com.cultura.eventos.Concierto;
 import com.cultura.eventos.Conferencia;
 import com.cultura.eventos.Evento;
+import com.cultura.eventos.TipoEvento;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -33,13 +34,16 @@ public class MainView extends Application {
     @Override
     public void start(Stage escenarioPrincipal) {
 
+        /*
         // Crear instancias de eventos de ejemplo 
         Evento evento1 = new Concierto("C001", "Concierto de Rock", LocalDate.of(2024, 11, 30), "Empresa X", 100, "Artista Y", "Rock");
         Evento evento2 = new Conferencia("C002", "Conferencia de Tecnología", LocalDate.of(2024, 12, 15), "Tech Corp", 150, "Innovaciones en IA", List.of("Panelista A", "Panelista B"));
         repositorio.guardar(evento1);
         repositorio.guardar(evento2);
-
+         */
+        repositorio.cargarDesdeJson();
         refrescarListaEventos();
+
         // Contenedor principal
         VBox layoutPrincipal = new VBox(10);
         layoutPrincipal.setPadding(new Insets(10));
@@ -87,10 +91,13 @@ public class MainView extends Application {
                         Concierto concierto = (Concierto) evento;
                         sb.append("Artista Principal: ").append(concierto.getArtistaPrincipal()).append("\n");
                         sb.append("Género Musical: ").append(concierto.getGeneroMusical()).append("\n");
+                        sb.append("Tipo: ").append(concierto.getTipo()).append("\n");
+
                     } else if (evento instanceof Conferencia) {
                         Conferencia conferencia = (Conferencia) evento;
                         sb.append("Tema: ").append(conferencia.getTema()).append("\n");
                         sb.append("Panelistas: ").append(String.join(", ", conferencia.getPanelistas())).append("\n");
+                        sb.append("Tipo: ").append(conferencia.getTipo()).append("\n");
                     }
 
                     setText(sb.toString());
@@ -178,6 +185,7 @@ public class MainView extends Application {
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == addButtonType) {
                 try {
+                    TipoEvento tipo = TipoEvento.CONFERENCIA;
                     String codigo = codigoField.getText();
                     String titulo = tituloField.getText();
                     LocalDate fecha = fechaPicker.getValue();
@@ -187,7 +195,7 @@ public class MainView extends Application {
                     List<String> panelistas = Arrays.asList(panelistasField.getText().split("\\s*,\\s*"));
 
                     // Crear y devolver el nuevo evento
-                    return new Conferencia(codigo, titulo, fecha, organizador, capacidad, tema, panelistas);
+                    return new Conferencia(tipo, codigo, titulo, fecha, organizador, capacidad, tema, panelistas);
                 } catch (Exception e) {
                     System.out.println("ERROR: " + e);
                 }
@@ -265,6 +273,7 @@ public class MainView extends Application {
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == addButtonType) {
                 try {
+                    TipoEvento tipo = TipoEvento.CONCIERTO;
                     String codigo = codigoField.getText();
                     String titulo = tituloField.getText();
                     LocalDate fecha = fechaPicker.getValue();  // Obtener la fecha desde el DatePicker
@@ -274,7 +283,7 @@ public class MainView extends Application {
                     String generoMusical = generoMusicalField.getText();
 
                     // Crear y devolver el nuevo evento
-                    return new Concierto(codigo, titulo, fecha, organizador, capacidad, artistaPrincipal, generoMusical);
+                    return new Concierto(tipo, codigo, titulo, fecha, organizador, capacidad, artistaPrincipal, generoMusical);
                 } catch (Exception e) {
                     System.out.println("ERROR: " + e);
                 }
@@ -360,6 +369,7 @@ public class MainView extends Application {
                     updateDialog.setResultConverter(dialogButton -> {
                         if (dialogButton == ButtonType.OK) {
                             try {
+                                TipoEvento tipo = TipoEvento.CONCIERTO;
                                 String titulo = tituloField.getText();
                                 LocalDate fecha = fechaPicker.getValue();
                                 String organizador = organizadorField.getText();
@@ -367,7 +377,7 @@ public class MainView extends Application {
                                 String artistaPrincipal = artistaPrincipalField.getText();
                                 String generoMusical = generoMusicalField.getText();
 
-                                return new Concierto(codigo, titulo, fecha, organizador, capacidad, artistaPrincipal, generoMusical);
+                                return new Concierto(tipo, codigo, titulo, fecha, organizador, capacidad, artistaPrincipal, generoMusical);
                             } catch (Exception e) {
                                 System.out.println("ERROR: " + e);
                             }
@@ -386,6 +396,7 @@ public class MainView extends Application {
                     updateDialog.setResultConverter(dialogButton -> {
                         if (dialogButton == ButtonType.OK) {
                             try {
+                                TipoEvento tipo = TipoEvento.CONFERENCIA;
                                 String titulo = tituloField.getText();
                                 LocalDate fecha = fechaPicker.getValue();
                                 String organizador = organizadorField.getText();
@@ -393,7 +404,7 @@ public class MainView extends Application {
                                 String tema = temaField.getText();
                                 List<String> panelistas = List.of(panelistasField.getText().split(",\\s*"));
 
-                                return new Conferencia(codigo, titulo, fecha, organizador, capacidad, tema, panelistas);
+                                return new Conferencia(tipo, codigo, titulo, fecha, organizador, capacidad, tema, panelistas);
                             } catch (Exception e) {
                                 System.out.println("ERROR: " + e);
                             }
