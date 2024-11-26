@@ -34,33 +34,19 @@ public class EventoRepositorio {
         }
     }
 
-    /*
     public void cargarDesdeJson() {
         try (Reader lector = new FileReader("eventos.json")) {
-            Type tipoListaEventos = new TypeToken<ArrayList<JsonObject>>() {
+            Type tipoListaEstudiantes = new TypeToken<ArrayList<Evento>>() {
             }.getType();
-            List<JsonObject> jsonList = gson.fromJson(lector, tipoListaEventos);
-            eventos = new ArrayList<>();
-            for (JsonObject jsonObj : jsonList) {
-                String tipo = jsonObj.get("tipo").getAsString();
-                if ("Concierto".equals(tipo)) {
-                    eventos.add(gson.fromJson(jsonObj, Concierto.class));
-                } else if ("Conferencia".equals(tipo)) {
-                    eventos.add(gson.fromJson(jsonObj, Conferencia.class));
-                }
+            eventos = gson.fromJson(lector, tipoListaEstudiantes);
+            if (eventos == null) {
+                eventos = new ArrayList<>();
             }
-        } catch (FileNotFoundException e) {
-            System.out.println("Archivo eventos.json no encontrado, iniciando con una lista vacía.");
-            eventos = new ArrayList<>();
         } catch (IOException e) {
-            System.out.println("Error al leer el archivo eventos.json: " + e.getMessage());
-            eventos = new ArrayList<>();
-        } catch (Exception e) {
-            System.out.println("Error al procesar el archivo JSON: " + e.getMessage());
             eventos = new ArrayList<>();
         }
     }
-     */
+
     public void guardarListaBinario(List<Evento> eventos) {
         try (ObjectOutputStream salida = new ObjectOutputStream(new FileOutputStream("eventos.dat"))) {
             salida.writeObject(eventos);
@@ -69,6 +55,7 @@ public class EventoRepositorio {
         }
     }
 
+    /*     ((AUN NO SE ESTÁ USANDO))
     public List<Evento> cargarListaBinaria() {
         try (ObjectInputStream entrada = new ObjectInputStream(new FileInputStream("eventos.dat"))) {
             return (List<Evento>) entrada.readObject();
@@ -77,6 +64,7 @@ public class EventoRepositorio {
             return null;
         }
     }
+    /*
 
     /**
      * Guardar un nuevo evento.
@@ -134,6 +122,37 @@ public class EventoRepositorio {
         } catch (Exception e) {
             System.out.println("Error al eliminar el evento: " + e.getMessage());
             return false;
+        }
+    }
+
+    public void exportarEventosACSV() {
+        try (PrintWriter printWriter = new PrintWriter(new FileWriter("eventos.csv"))) {
+            // Escribir encabezado
+            printWriter.println("Tipo,Código,Título,Fecha,Organizador,Capacidad,Detalle 1,Detalle 2");
+
+            // Escribir datos de eventos
+            for (Evento evento : eventos) {
+                String tipo = evento instanceof Concierto ? "Concierto" : "Conferencia";
+                String detalles = "";
+                if (evento instanceof Concierto) {
+                    Concierto concierto = (Concierto) evento;
+                    detalles = concierto.getArtistaPrincipal() + "," + concierto.getGeneroMusical();
+                } else if (evento instanceof Conferencia) {
+                    Conferencia conferencia = (Conferencia) evento;
+                    detalles = conferencia.getTema() + "," + String.join(" | ", conferencia.getPanelistas());
+                }
+                printWriter.println(String.join(",",
+                        tipo,
+                        evento.getCodigo(),
+                        evento.getTitulo(),
+                        evento.getFecha().toString(),
+                        evento.getOrganizador(),
+                        String.valueOf(evento.getCapacidadMaxima()),
+                        detalles));
+            }
+            System.out.println("Eventos exportados a CSV exitosamente.");
+        } catch (IOException e) {
+            System.out.println("Error al exportar eventos a CSV: " + e.getMessage());
         }
     }
 }
