@@ -3,7 +3,7 @@ package com.cultura.gestores;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Ordenamiento<T> {
+public class GestorElementos<T> {
 
     // Filtrar elementos según un criterio de filtro
     public List<T> filtrar(List<T> elementos, iFiltrado<T> filtro) {

@@ -108,10 +108,10 @@ public class EventoRepositorio {
 
     public String generarEstadisticasPromedio() {
         StringBuilder sb = new StringBuilder(); 
-        sb.append("Total de Asistentes por Evento:\n");
-        eventos.forEach(evento -> sb.append(evento.getTitulo()).append(": ").append(evento.getCapacidadMaxima()).append(" asistentes\n")); // Promedio de Capacidad Máxima
+        sb.append("Total de personas por Evento:\n");
+        eventos.forEach(evento -> sb.append(evento.getTitulo()).append(": ").append(evento.getCapacidadMaxima()).append(" personas\n")); // Promedio de Capacidad Máxima
         sb.append("\nPromedio de Capacidad Máxima:\n");
-        sb.append(calcularPromedioCapacidadMaxima()).append(" asistentes\n");
+        sb.append(calcularPromedioCapacidadMaxima()).append(" personas\n");
         return sb.toString();
     }
 

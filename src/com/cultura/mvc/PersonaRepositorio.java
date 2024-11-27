@@ -1,6 +1,6 @@
 package com.cultura.mvc;
 
-import com.cultura.gestores.Ordenamiento;
+import com.cultura.gestores.GestorElementos;
 import com.cultura.mvc.RepositorioGenerico;
 import com.cultura.personas.Asistente;
 import com.cultura.personas.Organizador;
@@ -14,7 +14,7 @@ public class PersonaRepositorio {
 
     private List<Persona> personas;
     private final RepositorioGenerico<Persona> repositorioGenerico;
-    private final Ordenamiento<Persona> ordenamiento = new Ordenamiento<>();
+    private final GestorElementos<Persona> ordenamiento = new GestorElementos<>();
 
     public PersonaRepositorio(Gson gson) {
         this.repositorioGenerico = new RepositorioGenerico<>(gson);
