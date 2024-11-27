@@ -4,6 +4,11 @@ import com.cultura.eventos.Concierto;
 import com.cultura.eventos.Conferencia;
 import com.cultura.eventos.Evento;
 import com.cultura.eventos.TipoEvento;
+import com.cultura.gestores.GsonConfig;
+import com.cultura.personas.Asistente;
+import com.cultura.personas.Organizador;
+import com.cultura.personas.Persona;
+import com.google.gson.Gson;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -21,27 +26,28 @@ import javafx.stage.Stage;
 
 public class MainView extends Application {
 
-    private EventoRepositorio repositorio = new EventoRepositorio();
+    // Crear una instancia de 
+    Gson gson = GsonConfig.createGson();
+
+    private String nombreEventosArchivoJson = "eventos.json";
+    private String nombreEventosArchivoBinario = "eventos.dat";
+
+    private EventoRepositorio repositorioEventos = new EventoRepositorio(gson);
+    private PersonaRepositorio repositorioPersonas = new PersonaRepositorio(gson);
 
     // Elementos de la interfaz gráfica
     private ListView<Evento> vistaListaEventos = new ListView<>();
+    private ListView<Persona> vistaListaPersonas = new ListView<>();
 
     private void refrescarListaEventos() {
         vistaListaEventos.getItems().clear(); // Limpiar la lista actual
-        vistaListaEventos.getItems().addAll(repositorio.buscarTodos()); // Agregar todos los eventos desde el repositorio
+        vistaListaEventos.getItems().addAll(repositorioEventos.buscarTodos()); // Agregar todos los eventos desde el repositorio
     }
 
     @Override
     public void start(Stage escenarioPrincipal) {
-
-        /*
-        // Crear instancias de eventos de ejemplo 
-        Evento evento1 = new Concierto("C001", "Concierto de Rock", LocalDate.of(2024, 11, 30), "Empresa X", 100, "Artista Y", "Rock");
-        Evento evento2 = new Conferencia("C002", "Conferencia de Tecnología", LocalDate.of(2024, 12, 15), "Tech Corp", 150, "Innovaciones en IA", List.of("Panelista A", "Panelista B"));
-        repositorio.guardar(evento1);
-        repositorio.guardar(evento2);
-         */
-        repositorio.cargarDesdeJson();
+        repositorioEventos.cargarEventosJson();
+        repositorioPersonas.cargarPersonasDeJson();
         refrescarListaEventos();
 
         // Contenedor principal
@@ -63,14 +69,17 @@ public class MainView extends Application {
 
         Button botonExportarCSV = new Button("Exportar a CSV");
         botonExportarCSV.setOnAction(e -> {
-            repositorio.exportarEventosACSV();
+            repositorioEventos.exportarEventosACSV();
         });
 
         Button botonGuardarBinario = new Button("Exportar en binario");
         botonGuardarBinario.setOnAction(e -> {
-            List<Evento> listaEventos = repositorio.buscarTodos();
-            repositorio.guardarListaBinario(listaEventos);
+            List<Evento> listaEventos = repositorioEventos.buscarTodos();
+            repositorioEventos.guardaListaEventosBinario(listaEventos, nombreEventosArchivoBinario);
         });
+
+        Button botonMostrarPersonal = new Button("Mostrar personal");
+        botonMostrarPersonal.setOnAction(e -> showMostrarPersonal(escenarioPrincipal));
 
         // Configuración de la vista de lista de eventos
         vistaListaEventos.setCellFactory(param -> new ListCell<>() {
@@ -112,10 +121,13 @@ public class MainView extends Application {
         HBox contenedorBotones = new HBox(10, botonAgregarConcierto, botonAgregarConferencia, botonActualizar, botonEliminar,
                 botonExportarCSV, botonGuardarBinario);
 
+        HBox contenedorBotones2 = new HBox(10, botonMostrarPersonal);
+
         // Agregar componentes al layout principal
         layoutPrincipal.getChildren().addAll(
                 gridEntrada,
                 contenedorBotones,
+                contenedorBotones2,
                 new Label("Lista de Eventos:"),
                 vistaListaEventos
         );
@@ -125,6 +137,44 @@ public class MainView extends Application {
         escenarioPrincipal.setTitle("Sistema de Gestión de Eventos");
         escenarioPrincipal.setScene(escena);
         escenarioPrincipal.show();
+    }
+
+    private void showMostrarPersonal(Stage owner) {
+        // Crear una instancia de PersonaRepositorio
+        PersonaRepositorio personaRepositorio = new PersonaRepositorio(GsonConfig.createGson());
+
+        // Cargar personas desde el archivo JSON
+        personaRepositorio.cargarPersonasDeJson();
+
+        // Configuración de la vista de lista de personas
+        vistaListaPersonas.setCellFactory(param -> new ListCell<>() {
+            @Override
+            protected void updateItem(Persona persona, boolean vacio) {
+                super.updateItem(persona, vacio);
+                if (vacio || persona == null) {
+                    setText("");
+                } else {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("> ").append(persona.getNombre()).append(" ").append(persona.getApellido()).append(" ");
+                    sb.append("(").append(persona.getTipoPersona()).append(") \n");
+
+                    setText(sb.toString());
+                }
+            }
+        });
+
+        // Agregar las personas a la ListView
+        vistaListaPersonas.getItems().setAll(personaRepositorio.buscarTodos());
+
+        // Opcional: Mostrar ventana con la lista de personas
+        Stage dialogo = new Stage();
+        dialogo.initOwner(owner);
+        dialogo.setTitle("Lista de Personas");
+        VBox dialogVBox = new VBox(20);
+        dialogVBox.getChildren().addAll(new Label("Lista de Personas:"), vistaListaPersonas);
+        Scene dialogScene = new Scene(dialogVBox, 400, 300);
+        dialogo.setScene(dialogScene);
+        dialogo.show();
     }
 
     private void showAddConferenciaDialog(Stage owner, TextArea conferenciaDisplay) {
@@ -207,7 +257,7 @@ public class MainView extends Application {
         dialog.showAndWait().ifPresent(evento -> {
             // Aquí puedes agregar lógica para agregar el evento al repositorio
             // y actualizar la interfaz
-            repositorio.guardar(evento);
+            repositorioEventos.guardarEvnetosJson(evento, nombreEventosArchivoJson);
             refrescarListaEventos();
             // controlador.agregarEvento(evento);  // Asegúrate de tener este método en tu controlador
             conferenciaDisplay.setText("Concierto agregado:\n" + evento);
@@ -295,7 +345,7 @@ public class MainView extends Application {
         dialog.showAndWait().ifPresent(evento -> {
             // Aquí puedes agregar lógica para agregar el evento al repositorio
             // y actualizar la interfaz
-            repositorio.guardar(evento);
+            repositorioEventos.guardarEvnetosJson(evento, nombreEventosArchivoJson);
             refrescarListaEventos();
             // controlador.agregarEvento(evento);  // Asegúrate de tener este método en tu controlador
             //conciertoDisplay.setText("Concierto agregado:\n" + evento);
@@ -311,7 +361,7 @@ public class MainView extends Application {
 
         // Mostrar el diálogo y capturar el resultado
         dialog.showAndWait().ifPresent(codigo -> {
-            boolean eliminado = repositorio.eliminar(codigo);
+            boolean eliminado = repositorioEventos.eliminar(codigo, nombreEventosArchivoJson);
             if (eliminado) {
                 refrescarListaEventos();
                 mostrarMensaje("Evento eliminado", "El evento con el código " + codigo + " ha sido eliminado.");
@@ -330,7 +380,7 @@ public class MainView extends Application {
 
         // Mostrar el diálogo y capturar el resultado
         dialog.showAndWait().ifPresent(codigo -> {
-            Optional<Evento> eventoOpt = repositorio.buscarPorCodigo(codigo);
+            Optional<Evento> eventoOpt = repositorioEventos.buscarPorCodigo(codigo);
             if (eventoOpt.isPresent()) {
                 Evento evento = eventoOpt.get();
                 // Crear un formulario para actualizar el evento
@@ -417,7 +467,7 @@ public class MainView extends Application {
                 updateDialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
                 updateDialog.showAndWait().ifPresent(eventoActualizado -> {
-                    repositorio.actualizar(eventoActualizado);
+                    repositorioEventos.actualizar(eventoActualizado, nombreEventosArchivoJson);
                     refrescarListaEventos();
                     mostrarMensaje("Evento actualizado", "El evento con el código " + codigo + " ha sido actualizado.");
                 });

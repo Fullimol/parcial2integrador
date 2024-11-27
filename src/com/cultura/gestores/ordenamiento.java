@@ -1,3 +1,7 @@
+/*
+acá ya se aplico el uso de la INTERFAZ FiltroEvento mediante el lambda
+*/
+
 package com.cultura.gestores;
 
 import com.cultura.eventos.Evento;
@@ -6,7 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//ya se está haciendo uso de la INTERFAZ FiltroEvento mediante el lambda
+
 public class Ordenamiento {
 
     // Filtrar eventos según un FiltroEvento

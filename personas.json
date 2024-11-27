@@ -1,0 +1,77 @@
+[
+    {
+        "tipoPersona": "ORGANIZADOR",
+        "nombre": "Alice",
+        "apellido": "Johnson"
+    },
+    {
+        "tipoPersona": "ASISTENTE",
+        "nombre": "John",
+        "apellido": "Doe"
+    },
+    {
+        "tipoPersona": "ORGANIZADOR",
+        "nombre": "Emily",
+        "apellido": "Smith"
+    },
+    {
+        "tipoPersona": "ASISTENTE",
+        "nombre": "Michael",
+        "apellido": "Brown"
+    },
+    {
+        "tipoPersona": "ORGANIZADOR",
+        "nombre": "Jessica",
+        "apellido": "Taylor"
+    },
+    {
+        "tipoPersona": "ASISTENTE",
+        "nombre": "David",
+        "apellido": "Wilson"
+    },
+    {
+        "tipoPersona": "ORGANIZADOR",
+        "nombre": "Daniel",
+        "apellido": "Anderson"
+    },
+    {
+        "tipoPersona": "ASISTENTE",
+        "nombre": "Laura",
+        "apellido": "Thomas"
+    },
+    {
+        "tipoPersona": "ORGANIZADOR",
+        "nombre": "James",
+        "apellido": "Martinez"
+    },
+    {
+        "tipoPersona": "ASISTENTE",
+        "nombre": "Sarah",
+        "apellido": "Harris"
+    },
+    {
+        "tipoPersona": "ORGANIZADOR",
+        "nombre": "Paul",
+        "apellido": "Walker"
+    },
+    {
+        "tipoPersona": "ASISTENTE",
+        "nombre": "Anna",
+        "apellido": "Lee"
+    },
+    {
+        "tipoPersona": "ORGANIZADOR",
+        "nombre": "Robert",
+        "apellido": "Moore"
+    },
+    {
+        "tipoPersona": "ASISTENTE",
+        "nombre": "Karen",
+        "apellido": "Clark"
+    },
+    {
+        "tipoPersona": "ORGANIZADOR",
+        "nombre": "William",
+        "apellido": "Davis"
+    }
+]
