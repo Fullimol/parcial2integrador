@@ -5,15 +5,13 @@ import com.cultura.eventos.Conferencia;
 import com.cultura.eventos.Evento;
 import com.cultura.eventos.TipoEvento;
 import com.cultura.gestores.GsonConfig;
-import com.cultura.personas.Asistente;
-import com.cultura.personas.Organizador;
 import com.cultura.personas.Persona;
 import com.google.gson.Gson;
-
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.geometry.Insets;
@@ -81,6 +79,21 @@ public class MainView extends Application {
         Button botonMostrarPersonal = new Button("Mostrar personal");
         botonMostrarPersonal.setOnAction(e -> showMostrarPersonal(escenarioPrincipal));
 
+        Button botonExportarEstadisticas = new Button("Archivo txt Estadistica");
+        botonExportarEstadisticas.setOnAction(e -> { 
+   
+            TextInputDialog dialogo = new TextInputDialog("estadisticas");
+            dialogo.setTitle("Guardar Estadísticas");
+            dialogo.setHeaderText("Guardar promedio de capacidad total");
+            dialogo.setContentText("Nombre del archivo .TXT:");
+            // Muestra el cuadro del dialogo
+            dialogo.showAndWait().ifPresent(nombreArchivo -> {
+                if (!nombreArchivo.isEmpty()) {
+                    repositorioEventos.exportarEstadisticasATexto(nombreArchivo + ".txt");
+                }
+            });
+        });
+
         // Configuración de la vista de lista de eventos
         vistaListaEventos.setCellFactory(param -> new ListCell<>() {
             @Override
@@ -121,7 +134,7 @@ public class MainView extends Application {
         HBox contenedorBotones = new HBox(10, botonAgregarConcierto, botonAgregarConferencia, botonActualizar, botonEliminar,
                 botonExportarCSV, botonGuardarBinario);
 
-        HBox contenedorBotones2 = new HBox(10, botonMostrarPersonal);
+        HBox contenedorBotones2 = new HBox(10, botonMostrarPersonal, botonExportarEstadisticas);
 
         // Agregar componentes al layout principal
         layoutPrincipal.getChildren().addAll(
@@ -155,23 +168,70 @@ public class MainView extends Application {
                     setText("");
                 } else {
                     StringBuilder sb = new StringBuilder();
-                    sb.append("> ").append(persona.getNombre()).append(" ").append(persona.getApellido()).append(" ");
-                    sb.append("(").append(persona.getTipoPersona()).append(") \n");
+                    sb.append("Nombre: ").append(persona.getNombre()).append(" ").append(persona.getApellido()).append("\n");
+                    sb.append("Tipo: ").append(persona.getTipoPersona()).append("\n");
 
                     setText(sb.toString());
                 }
             }
         });
 
+        // Crear campo de texto para la búsqueda y establecer el tamaño preferido
+        TextField campoBusqueda = new TextField();
+        campoBusqueda.setPromptText("Ingrese el nombre");
+        campoBusqueda.setPrefWidth(150);  // Establecer el tamaño preferido del campo de texto
+
+        // Crear botón de búsqueda
+        Button botonBuscar = new Button("Buscar");
+
+        // Acción del botón de búsqueda
+        botonBuscar.setOnAction(e -> {
+            String textoBusqueda = campoBusqueda.getText().toLowerCase();
+            if (textoBusqueda.isEmpty()) {
+                vistaListaPersonas.getItems().setAll(personaRepositorio.buscarTodos());
+            } else {
+                List<Persona> resultados = personaRepositorio.buscarTodos().stream()
+                        .filter(persona -> persona.getNombre().toLowerCase().contains(textoBusqueda))
+                        .collect(Collectors.toList());
+                vistaListaPersonas.getItems().setAll(resultados);
+            }
+        });
+
+        // Crear botones de ordenar por nombre y apellido
+        Button botonOrdenarNombre = new Button("Ordenar por Nombre");
+        Button botonOrdenarApellido = new Button("Ordenar por Apellido");
+
+        // Acción del botón de ordenar por nombre
+        botonOrdenarNombre.setOnAction(e -> {
+            personaRepositorio.ordenarPorNombre();
+            vistaListaPersonas.getItems().setAll(personaRepositorio.buscarTodos());
+        });
+
+        // Acción del botón de ordenar por apellido
+        botonOrdenarApellido.setOnAction(e -> {
+            personaRepositorio.ordenarPorApellido();
+            vistaListaPersonas.getItems().setAll(personaRepositorio.buscarTodos());
+        });
+
+        // Crear HBox para los botones de ordenar
+        HBox botonesOrdenarBox = new HBox(10);
+        botonesOrdenarBox.getChildren().addAll(botonOrdenarNombre, botonOrdenarApellido);
+
         // Agregar las personas a la ListView
         vistaListaPersonas.getItems().setAll(personaRepositorio.buscarTodos());
 
-        // Opcional: Mostrar ventana con la lista de personas
+        // Configuración del layout
+        HBox busquedaBox = new HBox(10);
+        busquedaBox.getChildren().addAll(campoBusqueda, botonBuscar);
+
+        VBox dialogVBox = new VBox(10);
+        dialogVBox.getChildren().addAll(new Label("Lista de Personas:"), busquedaBox, botonesOrdenarBox, vistaListaPersonas);
+        dialogVBox.setPadding(new Insets(10));
+
+        // Mostrar ventana con la lista de personas
         Stage dialogo = new Stage();
         dialogo.initOwner(owner);
         dialogo.setTitle("Lista de Personas");
-        VBox dialogVBox = new VBox(20);
-        dialogVBox.getChildren().addAll(new Label("Lista de Personas:"), vistaListaPersonas);
         Scene dialogScene = new Scene(dialogVBox, 400, 300);
         dialogo.setScene(dialogScene);
         dialogo.show();

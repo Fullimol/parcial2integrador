@@ -99,4 +99,30 @@ public class EventoRepositorio {
             System.out.println("Error al exportar eventos a CSV: " + e.getMessage());
         }
     }
+
+    public double calcularPromedioCapacidadMaxima() {
+        int totalCapacidadMaxima = eventos.stream().mapToInt(Evento::getCapacidadMaxima).sum();
+        int numeroDeEventos = eventos.size();
+        return numeroDeEventos > 0 ? (double) totalCapacidadMaxima / numeroDeEventos : 0;
+    }
+
+    public String generarEstadisticasPromedio() {
+        StringBuilder sb = new StringBuilder(); 
+        sb.append("Total de Asistentes por Evento:\n");
+        eventos.forEach(evento -> sb.append(evento.getTitulo()).append(": ").append(evento.getCapacidadMaxima()).append(" asistentes\n")); // Promedio de Capacidad Máxima
+        sb.append("\nPromedio de Capacidad Máxima:\n");
+        sb.append(calcularPromedioCapacidadMaxima()).append(" asistentes\n");
+        return sb.toString();
+    }
+
+    public void exportarEstadisticasATexto(String archivo) {
+        String estadisticas = generarEstadisticasPromedio();
+        try (FileWriter writer = new FileWriter(archivo)) {
+            writer.write(estadisticas);
+            System.out.println("Estadísticas exportadas a " + archivo);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Error al exportar las estadísticas: " + e.getMessage());
+        }
+    }
 }
