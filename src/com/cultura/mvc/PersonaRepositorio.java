@@ -25,12 +25,16 @@ public class PersonaRepositorio {
         this.personas = repositorioGenerico.procesarJson(jsonList, "tipoPersona", "ORGANIZADOR", Organizador.class, "ASISTENTE", Asistente.class);
         System.out.println("Personas cargadas: " + personas.size());
     }
+    
+    public void cargarPersonasBinario(String nombreArchivoBinario){
+        repositorioGenerico.cargarListaBinaria(nombreArchivoBinario);
+    }
 
     public List<Persona> buscarTodos() {
         return new ArrayList<>(personas);
     }
 
-    public void guardarListaBinario(List<Persona> personas) {
+    public void guardarPersonasABinario(List<Persona> personas) {
         repositorioGenerico.guardarListaBinario(personas, "personas.dat");
     }
 

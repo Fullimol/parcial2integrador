@@ -7,6 +7,7 @@ import com.cultura.eventos.TipoEvento;
 import com.cultura.gestores.GsonConfig;
 import com.cultura.personas.Persona;
 import com.google.gson.Gson;
+import java.io.File;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -45,24 +47,31 @@ public class MainView extends Application {
     @Override
     public void start(Stage escenarioPrincipal) {
         repositorioEventos.cargarEventosJson();
-        repositorioPersonas.cargarPersonasDeJson();
         refrescarListaEventos();
 
         // Contenedor principal
         VBox layoutPrincipal = new VBox(10);
         layoutPrincipal.setPadding(new Insets(10));
+        layoutPrincipal.setAlignment(Pos.CENTER);
+
+        Label titulo = new Label("Sistema de Gestión de Eventos");
+        titulo.setId("titulo");
 
         // Botones
         Button botonAgregarConcierto = new Button("Agregar Concierto");
+        botonAgregarConcierto.setId("botonVerde");
         botonAgregarConcierto.setOnAction(e -> showAddConciertoDialog(escenarioPrincipal, new TextArea()));
 
         Button botonAgregarConferencia = new Button("Agregar Conferencia");
+        botonAgregarConferencia.setId("botonVerde");
         botonAgregarConferencia.setOnAction(e -> showAddConferenciaDialog(escenarioPrincipal, new TextArea()));
 
         Button botonActualizar = new Button("Actualizar Evento");
+        botonActualizar.setId("botonNaranja");
         botonActualizar.setOnAction(e -> showActualizarEventoDialog(escenarioPrincipal));
 
         Button botonEliminar = new Button("Eliminar Evento");
+        botonEliminar.setId("botonRojo");
         botonEliminar.setOnAction(e -> showEliminarEventoDialog(escenarioPrincipal));
 
         Button botonExportarCSV = new Button("Exportar a CSV");
@@ -77,11 +86,12 @@ public class MainView extends Application {
         });
 
         Button botonMostrarPersonal = new Button("Mostrar personal");
+        botonMostrarPersonal.setId("botonVioleta");
         botonMostrarPersonal.setOnAction(e -> showMostrarPersonal(escenarioPrincipal));
 
-        Button botonExportarEstadisticas = new Button("Archivo txt Estadistica");
-        botonExportarEstadisticas.setOnAction(e -> { 
-   
+        Button botonExportarEstadisticas = new Button("Exportar txt Estadistica");
+        botonExportarEstadisticas.setOnAction(e -> {
+
             TextInputDialog dialogo = new TextInputDialog("estadisticas");
             dialogo.setTitle("Guardar Estadísticas");
             dialogo.setHeaderText("Guardar promedio de capacidad total");
@@ -131,13 +141,18 @@ public class MainView extends Application {
         GridPane gridEntrada = new GridPane();
 
         // Contenedor de botones
-        HBox contenedorBotones = new HBox(10, botonAgregarConcierto, botonAgregarConferencia, botonActualizar, botonEliminar,
-                botonExportarCSV, botonGuardarBinario);
+        HBox contenedorBotones = new HBox(10, botonAgregarConcierto, botonAgregarConferencia, botonActualizar,
+                botonEliminar, botonMostrarPersonal
+        );
 
-        HBox contenedorBotones2 = new HBox(10, botonMostrarPersonal, botonExportarEstadisticas);
+        HBox contenedorBotones2 = new HBox(10, botonExportarCSV, botonGuardarBinario, botonExportarEstadisticas);
+
+        contenedorBotones.setAlignment(Pos.CENTER);
+        contenedorBotones2.setAlignment(Pos.CENTER);
 
         // Agregar componentes al layout principal
         layoutPrincipal.getChildren().addAll(
+                titulo,
                 gridEntrada,
                 contenedorBotones,
                 contenedorBotones2,
@@ -147,6 +162,16 @@ public class MainView extends Application {
 
         // Configurar escena
         Scene escena = new Scene(layoutPrincipal, 800, 500);
+
+        // Todo esto es para leer el CSS
+        String cssFilePath = "D:\\ALMACENAMIENTO\\UTN Tecnicatura\\2do Cuatrimestre\\Programacion II (324)\\ParcialIntegrador\\src\\com\\cultura\\mvc\\styles.css";
+        File cssFile = new File(cssFilePath);
+        if (cssFile.exists()) {
+            escena.getStylesheets().add(cssFile.toURI().toString());
+        } else {
+            System.out.println("Archivo CSS no encontrado: " + cssFilePath);
+        }
+
         escenarioPrincipal.setTitle("Sistema de Gestión de Eventos");
         escenarioPrincipal.setScene(escena);
         escenarioPrincipal.show();

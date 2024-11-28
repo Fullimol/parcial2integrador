@@ -1,0 +1,101 @@
+/* Styles.css */
+
+.root {
+    -fx-font-family: 'Arial';
+    -fx-background-color: #E0F7FA;
+}
+
+.button {
+    -fx-background-color: #008CBA;
+    -fx-text-fill: white;
+    -fx-padding: 10px;
+    -fx-border-radius: 5px;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.25) , 4, 0.0 , 0 , 2);
+}
+
+.button:hover {
+    -fx-background-color: #005f73;
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 6, 0.0 , 0 , 3);
+    -fx-scale-x: 1.1; /* Escalar en el eje X */
+    -fx-scale-y: 1.1; /* Escalar en el eje Y */
+}
+
+/* Estilos específicos para los botones verdes */
+#botonVerde {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-padding: 10px;
+    -fx-border-radius: 5px;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.25) , 4, 0.0 , 0 , 2);
+}
+
+#botonVerde:hover {
+    -fx-background-color: #388E3C;
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 6, 0.0 , 0 , 3);
+}
+
+/* Estilos específicos para los botones rojos */
+#botonRojo {
+    -fx-background-color: #F44336;
+    -fx-text-fill: white;
+    -fx-padding: 10px;
+    -fx-border-radius: 5px;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.25) , 4, 0.0 , 0 , 2);
+}
+
+#botonRojo:hover {
+    -fx-background-color: #D32F2F;
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 6, 0.0 , 0 , 3);
+}
+
+/* Estilos específicos para los botones naranjas */
+#botonNaranja {
+    -fx-background-color: #FF9800; /* Color naranja */
+    -fx-text-fill: white;
+    -fx-padding: 10px;
+    -fx-border-radius: 5px;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.25) , 4, 0.0 , 0 , 2);
+}
+
+#botonNaranja:hover {
+    -fx-background-color: #FB8C00; /* Color naranja oscuro al pasar el ratón */
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 6, 0.0 , 0 , 3);
+}
+
+#botonVioleta {
+    -fx-background-color: #9C27B0; /* Color violeta */
+    -fx-text-fill: white;
+    -fx-padding: 10px;
+    -fx-border-radius: 5px;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.25) , 4, 0.0 , 0 , 2);
+}
+#botonVioleta:hover {
+    -fx-background-color: #7B1FA2; /* Color violeta oscuro al pasar el ratón */
+    -fx-effect: dropshadow( gaussian , rgba(0,0,0,0.5) , 6, 0.0 , 0 , 3);
+}
+
+.label {
+    -fx-font-size: 15px; /* Tamaño de fuente del título */
+
+    -fx-padding: 5px;
+    -fx-text-fill: #00796B; /* Color del texto del título */
+}
+
+
+#titulo {
+    -fx-font-size: 20px; /* Tamaño de fuente del título */
+    -fx-font-weight: bold;
+    -fx-padding: 8px;
+    -fx-text-fill: #00796B; /* Color del texto del título */
+    -fx-alignment: center; /* Alineación del texto al centro */
+}

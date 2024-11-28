@@ -66,8 +66,8 @@ public class RepositorioGenerico<T> {
         }
     }
 
-    public List<T> cargarListaBinaria() {
-        try (ObjectInputStream entrada = new ObjectInputStream(new FileInputStream("eventos.dat"))) {
+    public List<T> cargarListaBinaria(String nombreArchivoBinario) {
+        try (ObjectInputStream entrada = new ObjectInputStream(new FileInputStream(nombreArchivoBinario))) {
             return (List<T>) entrada.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();

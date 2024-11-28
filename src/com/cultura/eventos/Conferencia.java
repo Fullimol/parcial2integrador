@@ -19,19 +19,7 @@ public class Conferencia extends Evento {
         this.panelistas = panelistas;
     }
 
-    //metodos:
-    @Override
-    public boolean estaLleno() {
-        return false;
-    }
-
-    @Override
-    public void mostrarDetalles() {
-        System.out.println("aca debo mostrar los detalles");
-    }
-    
-    
-    public int cantidadPanelistas(){
+    public int cantidadPanelistas() {
         return panelistas.size();
     }
 
@@ -46,6 +34,14 @@ public class Conferencia extends Evento {
     public TipoEvento getTipo() {
         return tipo;
     }
-    
-    
+
+    @Override
+    public boolean estaLleno() {
+        return false;
+    }
+
+    @Override
+    public void mostrarDetalles() {
+        System.out.println("aca debo mostrar los detalles");
+    }
 }
