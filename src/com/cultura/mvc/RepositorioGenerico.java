@@ -9,14 +9,31 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Repositorio genérico para manejar operaciones de carga y guardado de datos en
+ * JSON y binario.
+ *
+ * @param <T> El tipo de los elementos que maneja este repositorio.
+ */
 public class RepositorioGenerico<T> {
 
     private final Gson gson;
 
+    /**
+     * Constructor para crear un repositorio genérico.
+     *
+     * @param gson Una instancia de Gson configurada.
+     */
     public RepositorioGenerico(Gson gson) {
         this.gson = gson;
     }
 
+    /**
+     * Carga una lista de objetos JSON desde un archivo.
+     *
+     * @param nombreArchivo El nombre del archivo JSON.
+     * @return Una lista de objetos JSON.
+     */
     public List<JsonObject> cargarDesdeJson(String nombreArchivo) {
         try (Reader lector = new FileReader(nombreArchivo)) {
             Type tipoLista = new TypeToken<ArrayList<JsonObject>>() {
@@ -34,7 +51,19 @@ public class RepositorioGenerico<T> {
         }
     }
 
-    //Esto es para evitar problemas al procesas datos de clases hijas.
+    /**
+     * Procesa una lista de objetos JSON y los convierte en una lista de objetos
+     * del tipo especificado.
+     *
+     * @param jsonList La lista de objetos JSON.
+     * @param clave La clave que contiene el tipo del objeto.
+     * @param valor1 El primer valor esperado de la clave.
+     * @param class1 La clase correspondiente al primer valor.
+     * @param valor2 El segundo valor esperado de la clave.
+     * @param class2 La clase correspondiente al segundo valor.
+     * @param <T> El tipo de los objetos en la lista resultante.
+     * @return Una lista de objetos del tipo especificado.
+     */
     public <T> List<T> procesarJson(List<JsonObject> jsonList, String clave, String valor1, Class<? extends T> class1, String valor2, Class<? extends T> class2) {
         List<T> lista = new ArrayList<>();
         for (JsonObject jsonObj : jsonList) {
@@ -48,6 +77,12 @@ public class RepositorioGenerico<T> {
         return lista;
     }
 
+    /**
+     * Guarda una lista de objetos en un archivo JSON.
+     *
+     * @param lista La lista de objetos a guardar.
+     * @param nombreArchivo El nombre del archivo JSON.
+     */
     public void guardarEnJson(List<T> lista, String nombreArchivo) {
         try (Writer escritor = new FileWriter(nombreArchivo)) {
             gson.toJson(lista, escritor);
@@ -58,6 +93,12 @@ public class RepositorioGenerico<T> {
         }
     }
 
+    /**
+     * Guarda una lista de objetos en un archivo binario.
+     *
+     * @param lista La lista de objetos a guardar.
+     * @param nombreArchivoBinario El nombre del archivo binario.
+     */
     public void guardarListaBinario(List<?> lista, String nombreArchivoBinario) {
         try (ObjectOutputStream salida = new ObjectOutputStream(new FileOutputStream(nombreArchivoBinario))) {
             salida.writeObject(lista);
@@ -66,6 +107,12 @@ public class RepositorioGenerico<T> {
         }
     }
 
+    /**
+     * Carga una lista de objetos desde un archivo binario.
+     *
+     * @param nombreArchivoBinario El nombre del archivo binario.
+     * @return Una lista de objetos leída desde el archivo binario.
+     */
     public List<T> cargarListaBinaria(String nombreArchivoBinario) {
         try (ObjectInputStream entrada = new ObjectInputStream(new FileInputStream(nombreArchivoBinario))) {
             return (List<T>) entrada.readObject();
